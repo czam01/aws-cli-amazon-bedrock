@@ -1,13 +1,12 @@
 # Lab 1 — Tu primer llamado a un LLM con AWS CLI
 
 > **Dominio del examen:** Generative AI · Foundation Models  
-> **Duración:** ~6 minutos  
+> **Duración:** ~15 minutos  
 > **Costo estimado:** ~$0.01 USD  
-> **📺 Video:** [Ver en YouTube](https://youtube.com)
 
 ---
 
-## 🎯 Qué aprenderás
+## Qué aprenderás
 
 Al terminar este lab entenderás en la práctica:
 
@@ -23,7 +22,7 @@ Al terminar este lab entenderás en la práctica:
 
 ---
 
-## ⚙️ Prerrequisitos
+## Prerrequisitos
 
 ```bash
 # AWS CLI v2 configurado
@@ -34,32 +33,22 @@ aws configure
 # Output format: json
 
 # Acceso a modelos habilitado en Bedrock Console:
-# Amazon Bedrock → Model access → Enable → Claude 3 Haiku
 ```
 
 ---
 
-## 📁 Archivos
+## Archivos
 
 ```
 lab1-bedrock-invoke/
 ├── invoke.sh       ← script principal (corre esto)
-└── request.json    ← payload del prompt
+├── request.json    ← payload del prompt
+└── request_system.json    ← payload del prompt con instruccion al sistema
 ```
 
 ---
 
-## 🚀 Cómo correr el lab
-
-```bash
-cd lab1-bedrock-invoke
-chmod +x invoke.sh
-./invoke.sh
-```
-
----
-
-## 📄 Archivos del lab
+## Archivos del lab
 
 ### `request.json` — El payload del prompt
 
@@ -90,10 +79,13 @@ chmod +x invoke.sh
 
 ```bash
 aws bedrock-runtime invoke-model \
-  --model-id anthropic.claude-haiku-4-5-20251001 \
+  --model-id us.anthropic.claude-haiku-4-5-20251001-v1:0 \
   --body file://request.json \
+  --content-type application/json \
+  --accept application/json \
   --region us-east-1 \
-  response.json && cat response.json | jq '.content[0].text'
+  --cli-binary-format raw-in-base64-out \
+  response.json
 ```
 
 ---
@@ -101,17 +93,29 @@ aws bedrock-runtime invoke-model \
 ### Output esperado
 
 ```json
+❯ cat response.json | jq .                                      
 {
+  "model": "claude-haiku-4-5-20251001",
+  "id": "msg_bdrk_01UWE2dFvpor9ATmLVYQ9Jba",
+  "type": "message",
+  "role": "assistant",
   "content": [
     {
       "type": "text",
-      "text": "Un foundation model es un modelo de IA entrenado con grandes cantidades..."
+      "text": "# Certificaciones de AWS\n\nAWS ofrece un programa de certificación bien estructurado para validar tus habilidades en la plataforma. Te cuento los detalles:\n\n## **Niveles de Certificación**\n\n### 🟢 **Foundational (Principiante)**\n- **AWS Certified Cloud Practitioner**\n  - Para principiantes sin experiencia técnica\n  - Cubre conceptos básicos de AWS\n  - ~60-90 horas de estudio\n\n### 🔵 **Associate (Intermedio)**\n- **Solutions Architect Associate**\n  - Diseño de soluciones en AWS\n  - Muy popular y demandada\n\n- **Developer Associate**\n  - Desarrollo de aplicaciones\n  - Enfoque en código y APIs\n\n- **SysOps Administrator Associate**\n  -"
     }
   ],
-  "stop_reason": "end_turn",
+  "stop_reason": "max_tokens",
+  "stop_sequence": null,
   "usage": {
-    "input_tokens": 18,
-    "output_tokens": 47
+    "input_tokens": 17,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+    },
+    "output_tokens": 200
   }
 }
 ```
@@ -127,26 +131,8 @@ aws bedrock-runtime invoke-model \
 
 ---
 
-## 🔧 Troubleshooting
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| `AccessDeniedException` | Modelo no habilitado | Bedrock Console → Model access → Enable Claude Haiku |
-| `UnrecognizedClientException` | Credenciales inválidas | `aws configure` y verificar región |
-| `ValidationException` | JSON malformado | `cat request.json \| jq .` para validar |
-
----
-
-## 📚 Pregunta típica del examen
-
-> *"Una empresa quiere invocar modelos de lenguaje sin gestionar infraestructura de ML.
-> ¿Qué servicio de AWS utilizaría?"*
-
-**Respuesta:** Amazon Bedrock — managed service, serverless, token-based pricing.
-
----
-
-## 🔗 Documentación oficial
+## Documentación oficial
 
 - [Bedrock InvokeModel API](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModel.html)
 - [Claude Messages API en Bedrock](https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-anthropic-claude-messages.html)
