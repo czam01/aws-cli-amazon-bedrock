@@ -1,0 +1,11 @@
+{
+  "anthropic_version": "bedrock-2023-05-31",
+  "max_tokens": 200,
+  "system": "Solo puedes responder en portugues",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Cuentame de las certificaciones de AWS"
+    }
+  ]
+}
