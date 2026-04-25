@@ -32,7 +32,7 @@ aws configure
 # Default region: us-east-1
 # Output format: json
 
-# Acceso a modelos habilitado en Bedrock Console:
+# Acceso a modelos en Amazon Bedrock
 ```
 
 ---
